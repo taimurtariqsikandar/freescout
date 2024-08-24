@@ -737,7 +737,7 @@ class FetchEmails extends Command
                 // It will always return an empty value as it's Bcc.
                 $this->attrToArray($message->getBcc())
             );
-            $this->createCustomers($emails, $mailbox->getEmails());
+            // $this->createCustomers($emails, $mailbox->getEmails());
 
             $date = $this->attrToDate($message->getDate());
 
@@ -977,7 +977,14 @@ class FetchEmails extends Command
         $prev_conv_cc = $conv_cc;
 
         // Customers are created before with email and name
-        $customer = Customer::create($from);
+        // $customer = Customer::create($from);
+        \Log::info('From email:', ['email' => $from]);
+
+        $customer = Customer::getByEmail($from);
+        if(!$customer) {
+            return false;
+        }
+        
         if ($prev_thread) {
             $conversation = $prev_thread->conversation;
 

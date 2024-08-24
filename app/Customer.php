@@ -490,7 +490,7 @@ class Customer extends Model
      */
     public function getMainEmail()
     {
-        return optional($this->emails_cached()->first())->email.'';
+        return optional($this->emails_cached()->first())->email . '';
     }
 
     /**
@@ -509,7 +509,7 @@ class Customer extends Model
     public function getFullName($email_if_empty = false, $first_part_from_email = false)
     {
         if ($this->first_name && $this->last_name) {
-            return $this->first_name.' '.$this->last_name;
+            return $this->first_name . ' ' . $this->last_name;
         } elseif (!$this->last_name && $this->first_name) {
             return $this->first_name;
         } elseif (!$this->first_name && $this->last_name) {
@@ -676,7 +676,7 @@ class Customer extends Model
             if (in_array($data['value'], $list)) {
                 unset($phones_array[$i]);
             } else {
-                $list[] = $data['value'];         
+                $list[] = $data['value'];
             }
         }
 
@@ -750,7 +750,7 @@ class Customer extends Model
     public static function byPhone($phone)
     {
         $phone_numeric = \Helper::phoneToNumeric($phone);
-        return Customer::where('phones', 'LIKE', '%"'.$phone_numeric.'"%');
+        return Customer::where('phones', 'LIKE', '%"' . $phone_numeric . '"%');
     }
 
     /**
@@ -815,7 +815,7 @@ class Customer extends Model
                 continue;
             }
             if (!preg_match("/http(s)?:\/\//i", $value)) {
-                $value = 'http://'.$value;
+                $value = 'http://' . $value;
             }
             $websites[] = (string) $value;
         }
@@ -1013,7 +1013,7 @@ class Customer extends Model
             $result = true;
         } else {
             // Update empty fields.
-            
+
             // Do not set last name if first name is already set (and vise versa).
             if (!empty($this->first_name) && !empty($data['last_name'])) {
                 unset($data['last_name']);
@@ -1134,7 +1134,7 @@ class Customer extends Model
      */
     public function url()
     {
-        return route('customers.update', ['id'=>$this->id]);
+        return route('customers.update', ['id' => $this->id]);
     }
 
     /**
@@ -1144,7 +1144,7 @@ class Customer extends Model
      */
     public function urlView()
     {
-        return route('customers.conversations', ['id'=>$this->id]);
+        return route('customers.conversations', ['id' => $this->id]);
     }
 
     /**
@@ -1172,7 +1172,7 @@ class Customer extends Model
         }
         if ($this->getFullName()) {
             if ($text) {
-                $text .= ' ('.$this->getFullName().')';
+                $text .= ' (' . $this->getFullName() . ')';
             } else {
                 $text .= $this->getFullName();
             }
@@ -1190,7 +1190,7 @@ class Customer extends Model
         }
         if ($email) {
             if ($text) {
-                $text .= ' <'.$email.'>';
+                $text .= ' <' . $email . '>';
             } else {
                 $text .= $email;
             }
@@ -1276,7 +1276,7 @@ class Customer extends Model
 
     public static function getPhotoUrlByFileName($file_name)
     {
-        return Storage::url(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name);
+        return Storage::url(self::PHOTO_DIRECTORY . DIRECTORY_SEPARATOR . $file_name);
     }
 
     /**
@@ -1291,8 +1291,8 @@ class Customer extends Model
             return false;
         }
 
-        $file_name = md5(Hash::make($this->id)).'.jpg';
-        $dest_path = Storage::path(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name);
+        $file_name = md5(Hash::make($this->id)) . '.jpg';
+        $dest_path = Storage::path(self::PHOTO_DIRECTORY . DIRECTORY_SEPARATOR . $file_name);
 
         $dest_dir = pathinfo($dest_path, PATHINFO_DIRNAME);
         if (!file_exists($dest_dir)) {
@@ -1301,7 +1301,7 @@ class Customer extends Model
 
         // Remove current photo
         if ($this->photo_url) {
-            Storage::delete(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
+            Storage::delete(self::PHOTO_DIRECTORY . DIRECTORY_SEPARATOR . $this->photo_url);
         }
 
         imagejpeg($resized_image, $dest_path, self::PHOTO_QUALITY);
@@ -1315,7 +1315,7 @@ class Customer extends Model
     public function removePhoto()
     {
         if ($this->photo_url) {
-            Storage::delete(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
+            Storage::delete(self::PHOTO_DIRECTORY . DIRECTORY_SEPARATOR . $this->photo_url);
         }
         $this->photo_url = '';
     }
@@ -1362,11 +1362,11 @@ class Customer extends Model
         if (!preg_match("/^https?:\/\//i", $sp['value_url'])) {
             switch ($sp['type']) {
                 case self::SOCIAL_TYPE_TELEGRAM:
-                    $sp['value_url'] = 'https://t.me/'.$sp['value'];
+                    $sp['value_url'] = 'https://t.me/' . $sp['value'];
                     break;
-                
+
                 default:
-                    $sp['value_url'] = 'http://'.$sp['value_url'];
+                    $sp['value_url'] = 'http://' . $sp['value_url'];
                     break;
             }
         }
@@ -1505,19 +1505,20 @@ class Customer extends Model
     {
         $value = mb_strtolower($value);
 
-        $like = '%'.$value.'","type":'.$type.'}]';
+        $like = '%' . $value . '","type":' . $type . '}]';
         $customers = Customer::where('social_profiles', \Helper::sqlLikeOperator(), $like)->get();
 
         // Now more prcise filtering.
         foreach ($customers as $i => $customer) {
             $ok = false;
             foreach ($customer->getSocialProfiles() as $social_profile) {
-                if ($social_profile['type'] == $type
+                if (
+                    $social_profile['type'] == $type
                     // Try to check username written in different ways:
                     // - username
                     // - @username
                     // - https://example.org/username
-                    && preg_match("#(^|/|@)".preg_quote($value)."$#", trim(mb_strtolower($social_profile['value'])))
+                    && preg_match("#(^|/|@)" . preg_quote($value) . "$#", trim(mb_strtolower($social_profile['value'])))
                 ) {
                     $ok = true;
                     break;
@@ -1549,5 +1550,31 @@ class Customer extends Model
 
         return $customer;
     }
-}
 
+    /**
+     * Delete customer.
+     *
+     * @param string $email
+     * @param array  $data  [description]
+     *
+     * @return [type] [description]
+     */
+    public static function deleteCustomerByEmail($email)
+    {
+        $email = Email::sanitizeEmail($email); // Sanitize email
+        if (!$email) {
+            return false;
+        }
+
+        $email_obj = Email::where('email', $email)->first();
+        if ($email_obj && $email_obj->customer) {
+            $customer = $email_obj->customer;
+            $customer->delete(); // This will delete the customer
+            $email_obj->delete(); // Optionally delete the email record
+
+            return true;
+        }
+
+        return false;
+    }
+}

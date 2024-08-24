@@ -1372,6 +1372,7 @@ class ConversationsController extends Controller
                         \Session::flash('flash_'.$flash_type.'_floating', $flash_text);
                     }
                 }
+                $customer = Customer::deleteCustomerByEmail($customer_email);
                 break;
 
             // Save draft (automatically or by click) of a new conversation or reply.
