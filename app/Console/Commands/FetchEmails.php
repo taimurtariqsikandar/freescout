@@ -245,7 +245,7 @@ class FetchEmails extends Command
 
                 try {    
                     $messages_query = $folder->query()->since(now()->subDays($this->option('days')))->leaveUnread();
-                    if ($unseen) {
+                    if (false && $unseen) {
                         $messages_query->unseen();
                     }
                     if ($no_charset) {
